@@ -15,14 +15,16 @@ const getDate = async () => {
 };
 
 const agregarPost = async (titulo, Imagen, descripcion) => {
-  // funcion  que ejecuta la consulta sql
-  const consulta = "INSERT INTO posts VALUES (DEFAULT, $1, $2, $3)";
-
   if ((titulo != "") & (Imagen != "") & (descripcion != "")) {
-    const values = [titulo, Imagen, descripcion];
-    const result = await pool.query(consulta, values);
-    console.log(result);
-    return result;
+    try {
+      const consulta = "INSERT INTO posts VALUES (DEFAULT, $1, $2, $3,0)";
+      const values = [titulo, Imagen, descripcion];
+      const result = await pool.query(consulta, values);
+      console.log(result);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
@@ -34,5 +36,35 @@ const obtenerPost = async () => {
   }
 };
 
+const modificarlikes = async (likes, id) => {
+  const consulta = "UPDATE posts SET likes = $1 WHERE id = $2";
+  const values = [likes, id];
+  const { rowCount } = await pool.query(consulta, values);
+  if (rowCount === 0) {
+    throw { code: 404, message: "No existe ningún post con este id" };
+  }
+};
+
+const sumarlikes = async (id) => {
+  const consulta = "UPDATE posts SET likes = likes + 1 WHERE id = $1";
+  const values = [id];
+  const { rowCount } = await pool.query(consulta, values);
+  if (rowCount === 0) {
+    throw { code: 404, message: "No se consiguió ningún post con este id" };
+  }
+};
+
+const eliminarPost = async (id) => {
+  const consulta = "DELETE FROM posts WHERE id = $1";
+  const values = [id];
+  const result = await pool.query(consulta, values);
+};
+
 obtenerPost();
-module.exports = { agregarPost, obtenerPost };
+module.exports = {
+  agregarPost,
+  obtenerPost,
+  modificarlikes,
+  sumarlikes,
+  eliminarPost,
+};
