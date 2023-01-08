@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const morgan = require("morgan-body");
 const {
   agregarPost,
   obtenerPost,
@@ -9,7 +10,7 @@ const {
 } = require("./post");
 
 const app = express();
-
+morgan(app);
 app.use(express.json());
 
 app.use(cors());
